@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cassette"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Ole-Batting <batting.ole@gmail.com>"]
 readme = "README.md"
@@ -9,7 +9,6 @@ readme = "README.md"
 python = "^3.11"
 opencv-python = "^4.8.1"
 Pygments = "^2.17.2"
-Pillow = "^10.1.0"
 pyyaml = "^6.0.1"
 numpy = "^1.26.2"
 

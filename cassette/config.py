@@ -11,7 +11,9 @@ class Config:
     size: tuple[int, int] = (3840, 2160)
     font_name: str = 'Menlo'
     font_size: int = 14
-    theme: str = 'github-dark'
+    theme: str = 'native'
+    em_width: int = 80
+    em_height: int = 10
 
     @property
     def shape(self):
@@ -19,13 +21,8 @@ class Config:
         return h, w
 
     @property
-    def half_size(self):
-        w, h = self.size
-        return w // 2, h // 2
-
-    @property
-    def fontpx(self):
-        return f"{self.font_size}px"
+    def em_size(self):
+        return self.em_width * self.font_size, self.em_height * self.font_size
 
 
 def load_config(path):
