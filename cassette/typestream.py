@@ -1,18 +1,15 @@
 import argparse
 import os
-from dataclasses import dataclass
-from typing import Optional
 
 import cv2
 import numpy as np
-from PIL import Image
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import ImageFormatter
 from tqdm import tqdm
 
 from cassette.config import load_config, Config
-from cassette.utils import superimpose, pad, awgn
+from cassette.utils import pad
 from cassette.writer import VideoWriter
 
 
@@ -60,25 +57,16 @@ class TypeStream:
     in_path: str
     out_path: str
     config: Config
-    background: Image.Image
     code_string: str
     render_mode: str
     render_mode_to_method: dict
 
-    def __init__(self, in_path: str, out_folder: str, config_path: str, bg_arr: Optional[np.ndarray] = None):
+    def __init__(self, in_path: str, out_folder: str, config_path: str):
         self.in_path = in_path
         self.out_folder = out_folder
         self.config = load_config(config_path)
 
-        if bg_arr is None:
-            bg_arr = np.array([
-                [21, 143, 214],
-                [38, 181, 105],
-            ])
-
-        self.background = self.make_background(bg_arr)
-
-        self.name = os.path.basename(self.in_path.split('.')[0])
+        self.name = os.path.basename(self.in_path.replace('.', "_"))
         self.out_path = os.path.join(self.out_folder, self.name)
         print(self.out_path)
 
@@ -92,27 +80,9 @@ class TypeStream:
     def run(self):
         self.render_mode_to_method[self.render_mode]()
 
-    def make_background(self, c: np.ndarray) -> Image.Image:
-        x = np.linspace(0, 1, self.config.size[0])
-        y = np.linspace(0, 1, self.config.size[1])
-        xv, yv = np.meshgrid(x, y, indexing='xy')
-        v = xv + yv
-
-        xp = np.linspace(0, 2, len(c))
-        fp = c - np.min(c, axis=1, keepdims=True)
-        blue = np.interp(v, xp, fp[:, 0])
-        green = np.interp(v, xp, fp[:, 1])
-        red = np.interp(v, xp, fp[:, 2])
-
-        bg = cv2.merge((blue, green, red))
-        bg += awgn(bg.shape, 5)
-        bg = np.clip(bg, 0, 255)
-        return Image.fromarray(bg.astype(np.uint8)).convert("RGBA")
-
     def center(self, code):
         code = pad(code, self.config)
-        out = superimpose(self.background, Image.fromarray(code))
-        return out
+        return code
 
     def final_frame(self):
         code_image = syntax_highlighted_image(self.code_string, self.config)

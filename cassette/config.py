@@ -12,8 +12,8 @@ class Config:
     font_name: str = 'Menlo'
     font_size: int = 14
     theme: str = 'native'
-    em_width: int = 80
-    em_height: int = 10
+    em_width: int = 100
+    em_height: int = 50
 
     @property
     def shape(self):
@@ -22,7 +22,12 @@ class Config:
 
     @property
     def em_size(self):
-        return self.em_width * self.font_size, self.em_height * self.font_size
+        return int(self.em_width * self.font_size * 0.625), int(self.em_height * self.font_size * 1.57)
+
+    @property
+    def em_shape(self):
+        ew, eh = self.em_size
+        return eh, ew
 
 
 def load_config(path):

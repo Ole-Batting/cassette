@@ -30,6 +30,8 @@ def pad_height(img, config):
         out = (np.ones((eh, w, 3)) * img[0, 0]).astype(np.uint8)
         out[:h, :w] = img
         img = out
+    elif h > eh:
+        img = img[-eh:]
     return img
 
 
